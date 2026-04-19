@@ -1,0 +1,17 @@
+hw/fpga/build
+hw/fpga/.Xil
+hw/fpga/*.jou
+
+hw/sim/*/.simvision
+hw/sim/*/sw/build
+hw/sim/*/waves.shm
+hw/sim/*/xcelium.d
+hw/sim/*/xrun.history
+hw/sim/*/xrun.key
+hw/sim/*/xrun.log
+
+sw/**/build
+
+.dvt
+.vscode
+*.log

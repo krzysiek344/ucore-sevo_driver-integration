@@ -1,0 +1,14 @@
+-F ../../rtl/core/core.f
+
+memory_map.sv
+dbus_arbiter.sv
+code_rom.sv
+data_ram.sv
+gpio.sv
+timer_counter.sv
+timer.sv
+uart_clock_generator.sv
+uart_receiver.sv
+uart_transmitter.sv
+uart.sv
+soc.sv
