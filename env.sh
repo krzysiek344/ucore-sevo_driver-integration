@@ -1,12 +1,12 @@
 #!/bin/bash -e
 
-. /cad/etc/lm_license_file
-. /eda/cadence/2024-25/scripts/XCELIUM_24.09.005_RHELx86.sh
+. /eda/etc/lm_license_file
+. /eda/cadence/2025-26/scripts/XCELIUM_25.03.006_RHELx86.sh
 
 export ROOTDIR=$(pwd)
 export BFMS_ROOTDIR=${ROOTDIR}/hw/sim/common
-export RISCV_TOOLCHAIN_ROOTDIR=/opt/riscv
-export VIVADO_ROOTDIR=/opt/Xilinx/2025.1/Vivado
+export RISCV_TOOLCHAIN_ROOTDIR=/eda/gcc/riscv
+export VIVADO_ROOTDIR=/eda/AMD/2025.1/Vivado
 
 export PATH=\
 ${ROOTDIR}/tools:\
