@@ -1,6 +1,6 @@
 /* Copyright (C) 2025  AGH University of Krakow */
 
-module tb_uart;
+module tb_soc_uart;
 
 
 /* Local variables and signals */

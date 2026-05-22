@@ -1,5 +1,3 @@
--F ../../rtl/core/core.f
-
 memory_map.sv
 dbus_arbiter.sv
 code_rom.sv

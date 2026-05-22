@@ -1,6 +1,6 @@
 /* Copyright (C) 2025  AGH University of Krakow */
 
-module tb_ifu ();
+module tb_core_ifu;
 
 
 /* Local variables and signals */

@@ -1,13 +1,11 @@
 /* Copyright (C) 2025  AGH University of Krakow */
 
-module tb_gpio;
+module tb_soc_data_ram;
 
 
 /* Local variables and signals */
 
-logic        clk, rst_n;
-
-logic [31:0] gpio_dout, gpio_din;
+logic clk, rst_n;
 
 
 /* BFMs instantiation */
@@ -33,8 +31,8 @@ soc dut (
     .uart_sout(),
     .uart_sin(1'b1),
 
-    .gpio_dout,
-    .gpio_din
+    .gpio_dout(),
+    .gpio_din(32'b0)
 );
 
 
@@ -44,14 +42,14 @@ function void initialize_code_rom();
     $readmemh("sw/build/app.mem", dut.u_code_rom.mem);
 endfunction
 
-task test_gpio();
-    gpio_din = 32'ha5a5a5a5;
+task test_data_ram();
+    for (int i = 0; i < 60000; ++i)
+        @(negedge clk) ;
 
-    for (int i = 0; i < 200; ++i)
-        @(negedge clk);
-
-    assert (gpio_dout == 32'h5a5a5a5a) else
-        $error("gpio_dout: exp: 0x%x, rcv: 0x%x", 32'h5a5a5a5a, gpio_dout);
+    for (int i = 0; i < 1024; ++i) begin
+        assert (dut.u_data_ram.mem[i] == i) else
+            $error("dut.u_data_ram.mem[%3d]: exp: 0x%x, rcv: 0x%x", i, i, dut.u_data_ram.mem[i]);
+    end
 endtask
 
 
@@ -60,14 +58,9 @@ endtask
 initial begin
     initialize_code_rom();
 
-    gpio_din = 32'h0;
-
     u_rst_n_gen.reset();
 
-    for (int i = 0; i < 100; ++i)
-        @(negedge clk);
-
-    test_gpio();
+    test_data_ram();
 
     $finish;
 end

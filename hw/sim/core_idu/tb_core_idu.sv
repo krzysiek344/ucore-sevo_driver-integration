@@ -1,8 +1,8 @@
 /* Copyright (C) 2025  AGH University of Krakow */
 
-module tb_idu
+module tb_core_idu
     import core_pkg::*;
-();
+;
 
 
 /* Local variables and signals */

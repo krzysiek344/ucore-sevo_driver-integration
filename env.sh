@@ -4,7 +4,6 @@
 . /eda/cadence/2025-26/scripts/XCELIUM_25.03.006_RHELx86.sh
 
 export ROOTDIR=$(pwd)
-export BFMS_ROOTDIR=${ROOTDIR}/hw/sim/common
 export RISCV_TOOLCHAIN_ROOTDIR=/eda/gcc/riscv
 export VIVADO_ROOTDIR=/eda/AMD/2025.1/Vivado
 

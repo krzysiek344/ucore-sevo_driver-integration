@@ -1,8 +1,8 @@
 /* Copyright (C) 2025  AGH University of Krakow */
 
-module tb_alu
+module tb_core_alu
     import core_pkg::*;
-();
+;
 
 
 /* Local variables and signals */

@@ -86,7 +86,7 @@ uint8_t uart_is_receiver_ready(void)
     return reg_read_bits(UART_SR_ADDRESS, UART_SR_RXNE_bp, UART_SR_RXNE_bm);
 }
 
-uint8_t uart_get_rdata()
+uint8_t uart_get_rdata(void)
 {
     return reg_read_bits(UART_RDR_ADDRESS, UART_RDR_RDATA_bp, UART_RDR_RDATA_bm);
 }

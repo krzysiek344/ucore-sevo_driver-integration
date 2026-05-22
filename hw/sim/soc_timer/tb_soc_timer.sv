@@ -1,6 +1,6 @@
 /* Copyright (C) 2025  AGH University of Krakow */
 
-module tb_timer;
+module tb_soc_timer;
 
 
 /* Local variables and signals */
