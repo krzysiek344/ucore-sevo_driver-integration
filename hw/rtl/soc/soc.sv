@@ -8,7 +8,10 @@ module soc (
     input logic         uart_sin,
 
     output logic [31:0] gpio_dout,
-    input logic [31:0]  gpio_din
+    input logic [31:0]  gpio_din,
+
+    output logic [3:0]  stepper_phases,
+    input logic         servo_sensor_raw
 );
 
 
@@ -22,6 +25,7 @@ dbus data_ram_dbus ();
 dbus gpio_dbus ();
 dbus timer_dbus ();
 dbus uart_dbus ();
+dbus servo_dbus ();
 
 
 /* Submodules placement */
@@ -44,7 +48,8 @@ dbus_arbiter u_dbus_arbiter (
     .data_ram_dbus,
     .gpio_dbus,
     .timer_dbus,
-    .uart_dbus
+    .uart_dbus,
+    .servo_dbus
 );
 
 code_rom u_code_rom (
@@ -87,6 +92,16 @@ uart u_uart (
 
     .sout(uart_sout),
     .sin(uart_sin)
+);
+
+servo u_servo (
+    .clk,
+    .rst_n,
+
+    .dbus(servo_dbus),
+
+    .stepper_phases,
+    .sensor_raw(servo_sensor_raw)
 );
 
 endmodule

@@ -12,7 +12,8 @@ module dbus_arbiter
     dbus.master data_ram_dbus,
     dbus.master gpio_dbus,
     dbus.master timer_dbus,
-    dbus.master uart_dbus
+    dbus.master uart_dbus,
+    dbus.master servo_dbus
 );
 
 
@@ -24,7 +25,8 @@ typedef enum logic [2:0] {
     DATA_RAM_READOUT,
     GPIO_READOUT,
     TIMER_READOUT,
-    UART_READOUT
+    UART_READOUT,
+    SERVO_READOUT
 } state_t;
 
 
@@ -62,6 +64,9 @@ always_comb begin
         end else if (core_dbus.addr inside {[UART_BASE_ADDRESS:UART_END_ADDRESS]}) begin
             if (uart_dbus.rreq)
                 state_nxt = UART_READOUT;
+        end else if (core_dbus.addr inside {[SERVO_BASE_ADDRESS:SERVO_END_ADDRESS]}) begin
+            if (servo_dbus.rreq)
+                state_nxt = SERVO_READOUT;
         end
     end
     CODE_ROM_READOUT: begin
@@ -77,6 +82,9 @@ always_comb begin
         state_nxt = REQUESTS_PROCESSING;
     end
     UART_READOUT: begin
+        state_nxt = REQUESTS_PROCESSING;
+    end
+    SERVO_READOUT: begin
         state_nxt = REQUESTS_PROCESSING;
     end
     endcase
@@ -116,6 +124,12 @@ always_comb begin
     uart_dbus.rreq = 1'b0;
     uart_dbus.wreq = 1'b0;
     uart_dbus.wdata = 32'b0;
+
+    servo_dbus.addr = 32'b0;
+    servo_dbus.be = 4'b0;
+    servo_dbus.rreq = 1'b0;
+    servo_dbus.wreq = 1'b0;
+    servo_dbus.wdata = 32'b0;
 
     case (state)
     REQUESTS_PROCESSING: begin
@@ -169,6 +183,16 @@ always_comb begin
             uart_dbus.rreq = core_dbus.rreq;
             uart_dbus.wreq = core_dbus.wreq;
             uart_dbus.wdata = core_dbus.wdata;
+        end else if (core_dbus.addr inside {[SERVO_BASE_ADDRESS:SERVO_END_ADDRESS]}) begin
+            core_dbus.stall = 1'b0;
+            core_dbus.rvalid = 1'b1;
+            core_dbus.rdata = servo_dbus.rdata;
+
+            servo_dbus.addr = core_dbus.addr;
+            servo_dbus.be = core_dbus.be;
+            servo_dbus.rreq = core_dbus.rreq;
+            servo_dbus.wreq = core_dbus.wreq;
+            servo_dbus.wdata = core_dbus.wdata;
         end
     end
     CODE_ROM_READOUT: begin
@@ -225,6 +249,17 @@ always_comb begin
         uart_dbus.rreq = core_dbus.rreq;
         uart_dbus.wreq = core_dbus.wreq;
         uart_dbus.wdata = core_dbus.wdata;
+    end
+    SERVO_READOUT: begin
+        core_dbus.stall = 1'b0;
+        core_dbus.rvalid = 1'b1;
+        core_dbus.rdata = servo_dbus.rdata;
+
+        servo_dbus.addr = core_dbus.addr;
+        servo_dbus.be = core_dbus.be;
+        servo_dbus.rreq = core_dbus.rreq;
+        servo_dbus.wreq = core_dbus.wreq;
+        servo_dbus.wdata = core_dbus.wdata;
     end
     endcase
 end
