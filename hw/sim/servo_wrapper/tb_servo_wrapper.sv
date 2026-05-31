@@ -78,7 +78,7 @@ task test_reset_values();
         $error("CR: exp: 0x%x, rcv: 0x%x", 32'b0, rdata);
 
     dbus_read(SR_OFFSET, rdata);
-    assert (rdata == 28'b0) else                                // nie chcemy patrzec na 'sensor raw'
+    assert (rdata[2:0] == 3'b0 && rdata[31:4] == 28'b0) else                                // nie chcemy patrzec na 'sensor raw'
         $error("SR: exp: 0x%x, rcv: 0x%x", 32'b0, rdata);
 
     dbus_read(TARGET_POS_OFFSET, rdata);
@@ -218,6 +218,54 @@ task test_callib_done();
     sensor_raw = 1'b0;
 endtask
 
+task test_go_to_busy();
+    logic [31:0] rdata;
+
+    u_rst_n_gen.reset();
+
+    dbus_write(SCALE_OFFSET, 32'd1);
+    dbus_write(TARGET_POS_OFFSET, 32'd3);
+    dbus_write(CR_OFFSET, 32'h0000_0005); // enable + go_to
+
+    dbus_read(SR_OFFSET, rdata);
+    assert (rdata[2] == 1'b1) else
+        $error("SR[2]: exp: 0x%x, rcv: 0x%x", 1'b1, rdata[2]);
+endtask
+
+task test_go_to_done();
+    logic [31:0] rdata;
+
+    u_rst_n_gen.reset();
+
+    dbus_write(SCALE_OFFSET, 32'd1);
+    dbus_write(TARGET_POS_OFFSET, 32'd3);
+    dbus_write(CR_OFFSET, 32'h0000_0005); // enable + go_to
+
+    for (int i = 0; i < 30; ++i)
+        @(negedge clk);
+
+    dbus_read(SR_OFFSET, rdata);
+    assert (rdata == 32'h0000_0002) else
+        $error("SR: exp: 0x%x, rcv: 0x%x", 32'h0000_0009, rdata);
+
+    dbus_read(CR_OFFSET, rdata);
+    assert (rdata == 32'h0000_0001) else
+        $error("CR: exp: 0x%x, rcv: 0x%x", 32'h0000_0001, rdata);
+endtask
+
+task test_go_to_busy_without_enable();
+    logic [31:0] rdata;
+
+    u_rst_n_gen.reset();
+
+    dbus_write(TARGET_POS_OFFSET, 32'd3);
+    dbus_write(CR_OFFSET, 32'h0000_0004); // go_to, enable = 0
+
+    dbus_read(SR_OFFSET, rdata);
+    assert (rdata[2] == 1'b1) else
+        $error("SR[2]: exp: 0x%x, rcv: 0x%x", 1'b1, rdata[2]);
+endtask
+
 
 
 /* Test */
@@ -233,6 +281,9 @@ initial begin
     test_callib_busy();
     test_callib_done();
     test_callib_busy_without_enable();
+    test_go_to_busy();
+    test_go_to_done();
+    test_go_to_busy_without_enable();
 
     $finish;
 end
