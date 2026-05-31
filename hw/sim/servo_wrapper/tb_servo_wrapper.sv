@@ -74,11 +74,11 @@ task test_reset_values();
     logic [31:0] rdata;
 
     dbus_read(CR_OFFSET, rdata);
-    assert (rdata == 28'b0) else                            // nie chcemy patrzec na 'sensor raw'
+    assert (rdata == 32'b0) else                          
         $error("CR: exp: 0x%x, rcv: 0x%x", 32'b0, rdata);
 
     dbus_read(SR_OFFSET, rdata);
-    assert (rdata == 32'b0) else
+    assert (rdata == 28'b0) else                                // nie chcemy patrzec na 'sensor raw'
         $error("SR: exp: 0x%x, rcv: 0x%x", 32'b0, rdata);
 
     dbus_read(TARGET_POS_OFFSET, rdata);
@@ -158,6 +158,66 @@ task test_sensor_status();
         $error("SR[3]: exp: 0x%x, rcv: 0x%x", 1'b0, rdata[3]);
 endtask
 
+task test_callib_busy();
+    logic [31:0] rdata;
+
+    u_rst_n_gen.reset();
+
+    sensor_raw = 1'b0;
+
+    dbus_write(CR_OFFSET, 32'h0000_0003); // enable + callib
+
+    dbus_read(SR_OFFSET, rdata);
+    assert (rdata[2] == 1'b1) else
+        $error("SR[2]: exp: 0x%x, rcv: 0x%x", 1'b1, rdata[2]);
+
+    u_rst_n_gen.reset();
+endtask
+
+task test_callib_busy_without_enable();
+    logic [31:0] rdata;
+
+    u_rst_n_gen.reset();
+
+    dbus_write(CR_OFFSET, 32'h0000_0002); // callib, enable = 0
+
+    dbus_read(SR_OFFSET, rdata);
+    assert (rdata[2] == 1'b1) else
+        $error("SR[2]: exp: 0x%x, rcv: 0x%x", 1'b1, rdata[2]);
+endtask
+
+task test_callib_done();
+    logic [31:0] rdata;
+
+    u_rst_n_gen.reset();
+
+    sensor_raw = 1'b0;
+
+    dbus_write(CR_OFFSET, 32'h0000_0003); // enable + callib
+
+    dbus_read(SR_OFFSET, rdata);
+    assert (rdata[2] == 1'b1) else
+        $error("SR[2]: exp: 0x%x, rcv: 0x%x", 1'b1, rdata[2]);
+
+    sensor_raw = 1'b1;
+
+    for (int i = 0; i < 1_000_020; ++i)
+        @(negedge clk);
+
+    dbus_read(CR_OFFSET, rdata);
+    assert (rdata[1] == 1'b0) else
+        $error("CR[1]: exp: 0x%x, rcv: 0x%x", 1'b0, rdata[1]);
+
+    dbus_read(SR_OFFSET, rdata);
+    assert (rdata[0] == 1'b1) else
+        $error("SR[0]: exp: 0x%x, rcv: 0x%x", 1'b1, rdata[0]);
+
+    assert (rdata[2] == 1'b0) else
+        $error("SR[2]: exp: 0x%x, rcv: 0x%x", 1'b0, rdata[2]);
+
+    sensor_raw = 1'b0;
+endtask
+
 
 
 /* Test */
@@ -170,6 +230,9 @@ initial begin
     test_reset_after_random_writes();
     test_register_write_read();
     test_sensor_status();
+    test_callib_busy();
+    test_callib_done();
+    test_callib_busy_without_enable();
 
     $finish;
 end
