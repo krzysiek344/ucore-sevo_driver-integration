@@ -74,7 +74,7 @@ task test_reset_values();
     logic [31:0] rdata;
 
     dbus_read(CR_OFFSET, rdata);
-    assert (rdata == 32'b0) else
+    assert (rdata == 28'b0) else                            // nie chcemy patrzec na 'sensor raw'
         $error("CR: exp: 0x%x, rcv: 0x%x", 32'b0, rdata);
 
     dbus_read(SR_OFFSET, rdata);
@@ -140,6 +140,25 @@ task test_reset_after_random_writes();
     end
 endtask
 
+task test_sensor_status();
+    logic [31:0] rdata;
+
+    sensor_raw = 1'b1;
+
+    @(negedge clk);
+    dbus_read(SR_OFFSET, rdata);
+    assert (rdata[3] == 1'b1) else
+        $error("SR[3]: exp: 0x%x, rcv: 0x%x", 1'b1, rdata[3]);
+
+    sensor_raw = 1'b0;
+
+    @(negedge clk);
+    dbus_read(SR_OFFSET, rdata);
+    assert (rdata[3] == 1'b0) else
+        $error("SR[3]: exp: 0x%x, rcv: 0x%x", 1'b0, rdata[3]);
+endtask
+
+
 
 /* Test */
 
@@ -150,6 +169,7 @@ initial begin
 
     test_reset_after_random_writes();
     test_register_write_read();
+    test_sensor_status();
 
     $finish;
 end
