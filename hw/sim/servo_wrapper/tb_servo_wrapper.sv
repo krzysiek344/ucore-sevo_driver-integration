@@ -95,38 +95,58 @@ task test_reset_values();
 endtask
 
 task test_register_write_read();
-    logic [31:0] rdata;
+    logic [31:0] rdata, wdata;
 
-    dbus_write(SCALE_OFFSET, 32'd5);
-    dbus_read(SCALE_OFFSET, rdata);
-    assert (rdata == 32'd5) else
-        $error("SCALE: exp: 0x%x, rcv: 0x%x", 32'd5, rdata);
+    for(int i = 0; i < 50; i++) begin
 
-    dbus_write(TARGET_POS_OFFSET, 32'd8);
-    dbus_read(TARGET_POS_OFFSET, rdata);
-    assert (rdata == 32'd8) else
-        $error("TARGET_POS: exp: 0x%x, rcv: 0x%x", 32'd8, rdata);
+        wdata = $random();
 
-    dbus_write(CR_OFFSET, 32'h0000_0009);
-    dbus_read(CR_OFFSET, rdata);
-    assert (rdata == 32'h0000_0009) else
-        $error("CR: exp: 0x%x, rcv: 0x%x", 32'h0000_0009, rdata);
+        dbus_write(SCALE_OFFSET, wdata);
+        dbus_read(SCALE_OFFSET, rdata);
+        assert (rdata == wdata) else
+            $error("SCALE: exp: 0x%x, rcv: 0x%x", wdata, rdata);
+
+        wdata = $random();
+
+        dbus_write(TARGET_POS_OFFSET, wdata);
+        dbus_read(TARGET_POS_OFFSET, rdata);
+        assert (rdata == wdata) else
+            $error("SCALE: exp: 0x%x, rcv: 0x%x", wdata, rdata);
+
+        wdata = {$random()} & 32'h0000_0009;          // nie chemy odpalac goto oraz callib gdy enable moze =1
+
+        dbus_write(CR_OFFSET, wdata);
+        dbus_read(CR_OFFSET, rdata);
+        assert (rdata == wdata) else
+            $error("CR: exp: 0x%x, rcv: 0x%x", wdata, rdata);
+    end
+endtask
+
+task test_reset_after_random_writes();
+    logic [31:0] wdata;
+
+    for (int i = 0; i < 10; ++i) begin
+        wdata = $random();
+        dbus_write(SCALE_OFFSET, wdata);
+
+        wdata = $random();
+        dbus_write(TARGET_POS_OFFSET, wdata);
+
+        wdata = $random() & 32'h0000_0009;
+        dbus_write(CR_OFFSET, wdata);
+
+        u_rst_n_gen.reset();
+        test_reset_values();
+    end
 endtask
 
 
 /* Test */
 
 initial begin
-    servo_dbus.addr = 32'b0;
-    servo_dbus.be = 4'b0;
-    servo_dbus.rreq = 1'b0;
-    servo_dbus.wreq = 1'b0;
-    servo_dbus.wdata = 32'b0;
-    sensor_raw = 1'b0;
-
     u_rst_n_gen.reset();
 
-    test_reset_values();
+    test_reset_after_random_write();
     test_register_write_read();
 
     $finish;
