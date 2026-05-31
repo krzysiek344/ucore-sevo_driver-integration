@@ -144,6 +144,8 @@ endtask
 /* Test */
 
 initial begin
+    sensor_raw = 1'b0;   
+
     u_rst_n_gen.reset();
 
     test_reset_after_random_writes();
