@@ -146,7 +146,7 @@ endtask
 initial begin
     u_rst_n_gen.reset();
 
-    test_reset_after_random_write();
+    test_reset_after_random_writes();
     test_register_write_read();
 
     $finish;
