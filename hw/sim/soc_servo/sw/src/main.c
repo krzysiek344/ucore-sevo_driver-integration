@@ -11,7 +11,7 @@
 
 int main(void)
 {
-    reg_write(SERVO_SCALE_ADDRESS, 15);
+    reg_write(SERVO_SCALE_ADDRESS, 2);
     reg_write(SERVO_TARGET_POS_ADDRESS, 3);
     reg_write(SERVO_CR_ADDRESS, SERVO_CR_ENABLE_bm | SERVO_CR_GO_TO_bm);
 

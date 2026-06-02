@@ -8,6 +8,14 @@ logic [3:0] stepper_phases;
 logic       servo_sensor_raw;
 
 
+/* Constants */
+
+const int GO_TO_TIMEOUT_CYCLES = 5000;
+
+const logic [31:0] EXP_SERVO_CR_GO_TO_DONE = 32'h0000_0001;
+const logic [31:0] EXP_SERVO_SR_GO_TO_DONE = 32'h0000_0002;
+
+
 /* Submodules placement */
 
 clk_gen #(
@@ -43,14 +51,32 @@ function void initialize_code_rom();
 endfunction
 
 task test_servo_go_to();
-    for (int i = 0; i < 500; ++i)
+    int timeout;
+    logic phases_changed;
+
+    timeout = 0;
+    phases_changed = 1'b0;
+
+    while (timeout < GO_TO_TIMEOUT_CYCLES && dut.u_servo.sr[1] == 1'b0) begin
         @(negedge clk);
 
-    assert (dut.u_servo.current_pos == 32'd3) else
-        $error("current_pos: exp: 0x%x, rcv: 0x%x", 32'd3, dut.u_servo.current_pos);
+        if (stepper_phases != 4'b0)
+            phases_changed = 1'b1;
 
-    assert (dut.u_servo.sr == 32'h0000_0002) else
-        $error("sr: exp: 0x%x, rcv: 0x%x", 32'h0000_0002, dut.u_servo.sr);
+        timeout++;
+    end
+
+    assert (timeout < GO_TO_TIMEOUT_CYCLES) else
+        $error("go_to timeout");
+
+    assert (phases_changed) else
+        $error("stepper_phases did not change");
+
+    assert (dut.u_servo.sr == EXP_SERVO_SR_GO_TO_DONE) else
+        $error("sr: exp: 0x%x, rcv: 0x%x", EXP_SERVO_SR_GO_TO_DONE, dut.u_servo.sr);
+
+    assert (dut.u_servo.cr == EXP_SERVO_CR_GO_TO_DONE) else
+        $error("cr: exp: 0x%x, rcv: 0x%x", EXP_SERVO_CR_GO_TO_DONE, dut.u_servo.cr);
 endtask
 
 
