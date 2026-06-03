@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdin.h>
+#include <stdint.h>
 
 void servo_set_enable(uint8_t en);
 void servo_set_inversion(uint8_t inv);
