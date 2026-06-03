@@ -3,9 +3,9 @@
 int main(void)
 {
     // init
-    servo_set_enable();
-    servo_set_inversion();
-    servo_set_scale();
+    servo_set_enable(1);
+    servo_set_inversion(0);
+    servo_set_scale(2);
 
     // test
     servo_go_to(3);
