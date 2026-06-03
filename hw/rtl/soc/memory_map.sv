@@ -15,5 +15,8 @@ const logic [31:0] CODE_ROM_BASE_ADDRESS = 32'h0000_0000,
                    TIMER_END_ADDRESS = 32'h3000_0fff,
 
                    UART_BASE_ADDRESS = 32'h4000_0000,
-                   UART_END_ADDRESS = 32'h4000_0fff;
+                   UART_END_ADDRESS = 32'h4000_0fff,
+
+                   SERVO_BASE_ADDRESS = 32'h5000_0000,
+                   SERVO_END_ADDRESS = 32'h5000_0fff;
 endpackage

@@ -9,4 +9,11 @@ uart_clock_generator.sv
 uart_receiver.sv
 uart_transmitter.sv
 uart.sv
+servo_driver/debouncer.sv
+servo_driver/master_fsm.sv
+servo_driver/prescaler.sv
+servo_driver/sequencer.sv
+servo_driver/step_counter.sv
+servo_driver/top_servo_drv.sv
+servo.sv
 soc.sv
