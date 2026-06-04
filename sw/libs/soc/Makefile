@@ -17,6 +17,7 @@ OBJS = \
     build/data_ram.o \
     build/gpio.o \
     build/reg.o \
+    build/servo.o \
     build/timer.o \
     build/uart.o
 
