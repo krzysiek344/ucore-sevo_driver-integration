@@ -45,7 +45,10 @@ soc dut (
     .uart_sin,
 
     .gpio_dout(),
-    .gpio_din(4'b0)
+    .gpio_din(4'b0),
+
+    .stepper_phases(),
+    .servo_sensor_raw(1'b0)
 );
 
 

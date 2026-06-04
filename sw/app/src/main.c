@@ -1,3 +1,5 @@
+// TODO
+// na razie nie przejmujemy sie tym dopuki robimy symulacje
 #include <stdint.h>
 
 #include <soc/servo.h>

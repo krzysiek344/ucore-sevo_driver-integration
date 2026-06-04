@@ -36,7 +36,10 @@ void servo_set_inversion(uint8_t inv){
 }
 
 void servo_set_scale(uint32_t val){
-    reg_write(SERVO_SCALE_ADDRESS, val);
+    if(val < 2)
+        reg_write(SERVO_SCALE_ADDRESS, 2);
+    else
+        reg_write(SERVO_SCALE_ADDRESS, val);
 }
 
 void servo_callib(uint8_t en){
