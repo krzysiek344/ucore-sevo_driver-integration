@@ -19,7 +19,8 @@ OBJS = \
     build/reg.o \
     build/servo.o \
     build/timer.o \
-    build/uart.o
+    build/uart.o \
+    build/servo.o
 
 .PHONY: all clean
 
