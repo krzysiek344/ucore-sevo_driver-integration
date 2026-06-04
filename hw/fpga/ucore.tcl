@@ -25,6 +25,13 @@ read_verilog -sv {
     ../rtl/soc/uart_receiver.sv
     ../rtl/soc/uart_transmitter.sv
     ../rtl/soc/uart.sv
+    ../rtl/soc/servo_driver/debouncer.sv
+    ../rtl/soc/servo_driver/master_fsm.sv
+    ../rtl/soc/servo_driver/prescaler.sv
+    ../rtl/soc/servo_driver/sequencer.sv
+    ../rtl/soc/servo_driver/step_counter.sv
+    ../rtl/soc/servo_driver/top_servo_drv.sv
+    ../rtl/soc/servo.sv
     ../rtl/soc/soc.sv
 
     rtl/pll.sv
