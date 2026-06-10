@@ -8,11 +8,10 @@ module ucore_basys3 (
     output logic       RsTx,
     input logic        RsRx,
 
-    output logic [3:0] led,
+    output logic [8:0] led,
     input logic [3:0]  sw,
 
-    output logic [3:0] stepper_phases,
-    input logic        servo_sensor_raw
+    output logic [3:0] stepper_phases
 );
 
 
@@ -29,7 +28,9 @@ assign clk = pll_clk;
 
 assign io_rst_n = ~btnC;
 
-assign led[3:0] = gpio_dout[3:0];
+assign led[3:0] = stepper_phases;
+assign led[4] = sw[2];
+assign led[8:5] = sw[3:0];
 
 
 /* Submodules placement */
@@ -63,7 +64,7 @@ soc u_soc (
     .gpio_din({28'b0, sw}),
 
     .stepper_phases,
-    .servo_sensor_raw
+    .servo_sensor_raw(sw[2])
 );
 
 endmodule

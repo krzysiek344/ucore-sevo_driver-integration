@@ -12,7 +12,7 @@ int main(void)
         servo_set_inversion(0);
         servo_set_scale(SERVO_SCALE);
 
-        uint32_t prev_gpio = 0;
+        uint32_t prev_gpio = gpio_get_din();
         uint32_t curr_gpio;
 
         uint8_t sw0_curr;
