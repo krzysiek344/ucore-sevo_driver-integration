@@ -1,4 +1,4 @@
-/*#include <stdint.h>
+#include <stdint.h>
 
 //#include <soc/gpio.h>
 #include <soc/servo.h>
@@ -73,7 +73,7 @@ int main(void)
         if (uart_read(rx_buf, RX_BUF_LEN) != 0) continue;
     
 
-        if (starts_with(rx_buf, "CALIB")){
+        if (starts_with(rx_buf, "callib")){
 
             if (servo_is_busy()) {
                 uart_write("ERR BUSY\n");
@@ -82,7 +82,7 @@ int main(void)
             servo_callib(1);
         }
         
-        else if (starts_with(rx_buf, "GOTO ")){
+        else if (starts_with(rx_buf, "goto ")){
 
             uint32_t target_pos;
             if (!parse_u32(rx_buf + 5, &target_pos)) {
@@ -96,67 +96,18 @@ int main(void)
             servo_go_to(target_pos);
         }
         
-        else if (starts_with(rx_buf, "POS?")){
+        else if (starts_with(rx_buf, "pos?")){
             uart_write("POS: ");
             uart_write_u32(servo_get_current_pos());
             uart_write("\n");
         } 
-        else if (starts_with(rx_buf, "STATUS?")){
+        else if (starts_with(rx_buf, "status?")){
             if (servo_is_busy())
                 uart_write("STATUS BUSY\n");
             else
                 uart_write("STATUS IDLE\n");
         } 
         else{
-            uart_write("ERR CMD\n");
-        }
-    }
-}*/
-#include <soc/uart.h>
-
-#define RX_BUF_LEN 32
-
-static uint8_t starts_with(const char *s, const char *prefix)
-{
-    while (*prefix) {
-        if (*s != *prefix)
-            return 0;
-
-        ++s;
-        ++prefix;
-    }
-
-    return 1;
-}
-
-int main(void)
-{
-    char rx_buf[RX_BUF_LEN];
-
-    uart_init();
-    uart_write("uart command test booted\n");
-
-    while (1) {
-        uart_write("> ");
-
-        if (uart_read(rx_buf, RX_BUF_LEN) != 0) {
-            uart_write("ERR RX\n");
-            continue;
-        }
-
-        uart_write("RX: ");
-        uart_write(rx_buf);
-        uart_write("\n");
-
-        if (starts_with(rx_buf, "CALIB")) {
-            uart_write("CMD CALIB\n");
-        } else if (starts_with(rx_buf, "GOTO ")) {
-            uart_write("CMD GOTO\n");
-        } else if (starts_with(rx_buf, "POS?")) {
-            uart_write("CMD POS\n");
-        } else if (starts_with(rx_buf, "STATUS?")) {
-            uart_write("CMD STATUS\n");
-        } else {
             uart_write("ERR CMD\n");
         }
     }
