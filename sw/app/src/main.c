@@ -1,4 +1,4 @@
-#include <stdint.h>
+/*#include <stdint.h>
 
 //#include <soc/gpio.h>
 #include <soc/servo.h>
@@ -109,6 +109,31 @@ int main(void)
         } 
         else{
             uart_write("ERR CMD\n");
+        }
+    }
+}*/
+
+#include <stdint.h>
+
+#include <soc/timer.h>
+#include <soc/uart.h>
+
+#define UART_TEST_PERIOD 40000000u
+
+int main(void)
+{
+    uint32_t last_time;
+
+    uart_init();
+    timer_set_enabled(1);
+
+    uart_write("uart test booted\n");
+    last_time = timer_get_value();
+
+    while (1) {
+        if ((timer_get_value() - last_time) >= UART_TEST_PERIOD) {
+            last_time = timer_get_value();
+            uart_write("uart alive\n");
         }
     }
 }

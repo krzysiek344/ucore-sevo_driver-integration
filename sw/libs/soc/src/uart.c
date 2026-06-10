@@ -34,7 +34,7 @@ static void uart_set_wdata(uint8_t val);
 
 void uart_init(void)
 {
-    reg_write_bits(UART_CCR_ADDRESS, UART_CCR_DIVIDER_bp, UART_CCR_DIVIDER_bm, 26);
+    reg_write_bits(UART_CCR_ADDRESS, UART_CCR_DIVIDER_bp, UART_CCR_DIVIDER_bm, 11);
     reg_write_bits(UART_CCR_ADDRESS, UART_CCR_EDGES_PER_BIT_bp, UART_CCR_EDGES_PER_BIT_bm, 16);
     reg_write_bits(UART_CR_ADDRESS, UART_CR_EN_bp, UART_CR_EN_bm, 1);
 }
