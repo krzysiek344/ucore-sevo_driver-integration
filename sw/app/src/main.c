@@ -1,39 +1,45 @@
-// TODO
-// na razie nie przejmujemy sie tym dopuki robimy symulacje
 #include <stdint.h>
 
+#include <soc/gpio.h>
 #include <soc/servo.h>
-#include <soc/uart.h>
 
-#define SERVO_SCALE          400000u
-#define SERVO_POS_A         0u
-#define SERVO_POS_B         100u
-#define MOVE_DELAY_CYCLES   1000000u
-
-static void delay_cycles(uint32_t cycles)
-{
-    for (uint32_t i = 0; i < cycles; ++i)
-        asm volatile ("nop");
-}
+#define TIMER_HZ        40000000u
+#define SERVO_SCALE     (TIMER_HZ / 50u)      / 50 Hz
 
 int main(void)
 {
-    uart_init();
-    uart_write("servo demo\n");
+        servo_set_enable(1);
+        servo_set_inversion(0);
+        servo_set_scale(SERVO_SCALE);
 
-    servo_set_scale(SERVO_SCALE);
-    servo_set_inversion(0);
-    servo_enable(1);
+        uint32_t prev_gpio = 0;
+        uint32_t curr_gpio;
 
-    while (1) {
-        servo_go_to(SERVO_POS_B);
-        servo_wait_go_to_done();
-        uart_write("position B\n");
-        delay_cycles(MOVE_DELAY_CYCLES);
+        uint8_t sw0_curr;
+        uint8_t sw0_prev;
+        uint8_t sw1_curr;
+        uint8_t sw1_prev;
 
-        servo_go_to(SERVO_POS_A);
-        servo_wait_go_to_done();
-        uart_write("position A\n");
-        delay_cycles(MOVE_DELAY_CYCLES);
-    }
+        while(true)
+        {
+                curr_gpio = gpio_get_din();
+
+                sw0_curr = (curr_gpio & 0x01) ? 1 : 0;
+                sw1_curr = (curr_gpio & 0x02) ? 1 : 0;
+
+                sw0_prev = (prev_gpio & 0x01) ? 1 : 0;
+                sw1_prev = (prev_gpio & 0x02) ? 1 : 0;
+
+                if(sw0_curr == 1 && sw0_prev == 0){
+
+                       if(!servo_is_busy())  servo_callib(1);
+                }
+
+                if(sw1_curr == 1 && sw0_prev == 0){
+
+                        if(!servo_is_busy()) servo_go_to(20);
+                }
+
+                prev_gpio = curr_gpio;
+        }
 }
