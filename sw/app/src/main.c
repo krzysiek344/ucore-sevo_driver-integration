@@ -1,39 +1,113 @@
-// TODO
-// na razie nie przejmujemy sie tym dopuki robimy symulacje
 #include <stdint.h>
 
 #include <soc/servo.h>
 #include <soc/uart.h>
 
-#define SERVO_SCALE          400000u
-#define SERVO_POS_A         0u
-#define SERVO_POS_B         100u
-#define MOVE_DELAY_CYCLES   1000000u
+#define TIMER_HZ        40000000u
+#define SERVO_SCALE     (TIMER_HZ / 50u)      // 50 Hz
 
-static void delay_cycles(uint32_t cycles)
+#define RX_BUF_LEN      32
+
+static uint8_t starts_with(const char *s, const char *prefix)
 {
-    for (uint32_t i = 0; i < cycles; ++i)
-        asm volatile ("nop");
+    while (*prefix) {
+        if (*s != *prefix)
+            return 0;
+        ++s;
+        ++prefix;
+    }
+    return 1;
+}
+
+static uint8_t parse_u32(const char *s, uint32_t *val)
+{
+    uint32_t result = 0;
+    uint8_t has_digit = 0;
+    while (*s == ' ')
+        ++s;
+    while (*s >= '0' && *s <= '9') {
+        has_digit = 1;
+        result = result * 10u + (uint32_t)(*s - '0');
+        ++s;
+    }
+    while (*s == ' ')
+        ++s;
+    if (*s != '\0')
+        return 0;
+    if (!has_digit)
+        return 0;
+    *val = result;
+    return 1;
+}
+
+static void uart_write_u32(uint32_t val)
+{
+    char buf[11];
+    int i = 0;
+    if (val == 0) {
+        uart_write_byte('0');
+        return;
+    }
+    while (val > 0) {
+        buf[i++] = (char)('0' + (val % 10u));
+        val /= 10u;
+    }
+    while (i > 0)
+        uart_write_byte((uint8_t)buf[--i]);
 }
 
 int main(void)
 {
+    char rx_buf[RX_BUF_LEN];
+
     uart_init();
-    uart_write("servo demo\n");
-
-    servo_set_scale(SERVO_SCALE);
+    servo_set_enable(1);
     servo_set_inversion(0);
-    servo_enable(1);
+    servo_set_scale(SERVO_SCALE);
 
-    while (1) {
-        servo_go_to(SERVO_POS_B);
-        servo_wait_go_to_done();
-        uart_write("position B\n");
-        delay_cycles(MOVE_DELAY_CYCLES);
+    uart_write("booted\n");
 
-        servo_go_to(SERVO_POS_A);
-        servo_wait_go_to_done();
-        uart_write("position A\n");
-        delay_cycles(MOVE_DELAY_CYCLES);
+    while (1){
+
+        if (uart_read(rx_buf, RX_BUF_LEN) != 0) continue;
+    
+
+        if (starts_with(rx_buf, "callib")){
+
+            if (servo_is_busy()) {
+                uart_write("ERR BUSY\n");
+                continue;
+            }
+            servo_callib(1);
+        }
+        
+        else if (starts_with(rx_buf, "goto ")){
+
+            uint32_t target_pos;
+            if (!parse_u32(rx_buf + 5, &target_pos)) {
+                uart_write("ERR ARG\n");
+                continue;
+            }
+            if (servo_is_busy()) {
+                uart_write("ERR BUSY\n");
+                continue;
+            }
+            servo_go_to(target_pos);
+        }
+        
+        else if (starts_with(rx_buf, "pos?")){
+            uart_write("POS: ");
+            uart_write_u32(servo_get_current_pos());
+            uart_write("\n");
+        } 
+        else if (starts_with(rx_buf, "status?")){
+            if (servo_is_busy())
+                uart_write("STATUS BUSY\n");
+            else
+                uart_write("STATUS IDLE\n");
+        } 
+        else{
+            uart_write("ERR CMD\n");
+        }
     }
 }

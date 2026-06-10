@@ -3,7 +3,7 @@
 module top_servo_drv #(
     parameter POS_RANGE     = 32, 
     parameter SCALE_WIDTH   = 32,
-    parameter DELAY_CYCLES  = 1000000,
+    parameter DELAY_CYCLES  = 200000,
     parameter COILS_NUM     = 4
 ) (
     input  logic clk,
