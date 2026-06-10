@@ -112,28 +112,52 @@ int main(void)
         }
     }
 }*/
-
-#include <stdint.h>
-
-#include <soc/timer.h>
 #include <soc/uart.h>
 
-#define UART_TEST_PERIOD 40000000u
+#define RX_BUF_LEN 32
+
+static uint8_t starts_with(const char *s, const char *prefix)
+{
+    while (*prefix) {
+        if (*s != *prefix)
+            return 0;
+
+        ++s;
+        ++prefix;
+    }
+
+    return 1;
+}
 
 int main(void)
 {
-    uint32_t last_time;
+    char rx_buf[RX_BUF_LEN];
 
     uart_init();
-    timer_set_enabled(1);
-
-    uart_write("uart test booted\n");
-    last_time = timer_get_value();
+    uart_write("uart command test booted\n");
 
     while (1) {
-        if ((timer_get_value() - last_time) >= UART_TEST_PERIOD) {
-            last_time = timer_get_value();
-            uart_write("uart alive\n");
+        uart_write("> ");
+
+        if (uart_read(rx_buf, RX_BUF_LEN) != 0) {
+            uart_write("ERR RX\n");
+            continue;
+        }
+
+        uart_write("RX: ");
+        uart_write(rx_buf);
+        uart_write("\n");
+
+        if (starts_with(rx_buf, "CALIB")) {
+            uart_write("CMD CALIB\n");
+        } else if (starts_with(rx_buf, "GOTO ")) {
+            uart_write("CMD GOTO\n");
+        } else if (starts_with(rx_buf, "POS?")) {
+            uart_write("CMD POS\n");
+        } else if (starts_with(rx_buf, "STATUS?")) {
+            uart_write("CMD STATUS\n");
+        } else {
+            uart_write("ERR CMD\n");
         }
     }
 }
