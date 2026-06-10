@@ -11,7 +11,8 @@ module ucore_basys3 (
     output logic [8:0] led,
     input logic [3:0]  sw,
 
-    output logic [3:0] stepper_phases
+    output logic [3:0] stepper_phases,
+    input logic        servo_sensor_raw
 );
 
 
@@ -64,7 +65,7 @@ soc u_soc (
     .gpio_din({28'b0, sw}),
 
     .stepper_phases,
-    .servo_sensor_raw(sw[2])
+    .servo_sensor_raw
 );
 
 endmodule
