@@ -1,6 +1,5 @@
 #include <stdint.h>
 
-//#include <soc/gpio.h>
 #include <soc/servo.h>
 #include <soc/uart.h>
 
@@ -68,7 +67,7 @@ int main(void)
 
     uart_write("booted\n");
 
-    while (1) {
+    while (1){
 
         if (uart_read(rx_buf, RX_BUF_LEN) != 0) continue;
     
