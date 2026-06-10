@@ -4,7 +4,7 @@
 #include <soc/servo.h>
 
 #define TIMER_HZ        40000000u
-#define SERVO_SCALE     (TIMER_HZ / 50u)      / 50 Hz
+#define SERVO_SCALE     (TIMER_HZ / 50u)      // 50 Hz
 
 int main(void)
 {
@@ -20,7 +20,7 @@ int main(void)
         uint8_t sw1_curr;
         uint8_t sw1_prev;
 
-        while(true)
+        while(1)
         {
                 curr_gpio = gpio_get_din();
 
@@ -35,7 +35,7 @@ int main(void)
                        if(!servo_is_busy())  servo_callib(1);
                 }
 
-                if(sw1_curr == 1 && sw0_prev == 0){
+                if(sw1_curr == 1 && sw1_prev == 0){
 
                         if(!servo_is_busy()) servo_go_to(20);
                 }
