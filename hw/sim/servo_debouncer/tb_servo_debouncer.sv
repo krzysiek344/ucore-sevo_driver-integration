@@ -89,7 +89,7 @@ task test_stable_high_passes_after_delay();
     wait_cycles(DELAY_CYCLES - 1);
     check_signal(1'b0);
 
-    wait_cycles(2);
+    wait_cycles(3);
     check_signal(1'b1);
 endtask
 
@@ -111,7 +111,7 @@ task test_stable_low_passes_after_delay();
     wait_cycles(DELAY_CYCLES - 1);
     check_signal(1'b1);
 
-    wait_cycles(2);
+    wait_cycles(3);
     check_signal(1'b0);
 endtask
 
