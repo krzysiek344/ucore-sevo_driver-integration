@@ -85,7 +85,7 @@ endtask
 initial begin
     initialize_code_rom();
 
-    servo_sensor_raw = 1'b0;
+    servo_sensor_raw = 1'b1;
 
     u_rst_n_gen.reset();
 

@@ -66,7 +66,7 @@ task clear_inputs();
     target_pos = 8'b0;
     scale_val = 8'd2;
     inversion = 1'b0;
-    sensor_raw = 1'b0;
+    sensor_raw = 1'b1;
 endtask
 
 task wait_cycle();
@@ -135,7 +135,7 @@ task test_reset();
     target_pos = 8'd3;
     scale_val = 8'd2;
     inversion = 1'b1;
-    sensor_raw = 1'b1;
+    sensor_raw = 1'b0;
 
     u_rst_n_gen.reset();
 
@@ -187,13 +187,13 @@ task test_callib_sets_zero();
     stop_go_to();
     check_pos(8'd3);
 
-    sensor_raw = 1'b0;
+    sensor_raw = 1'b1;
     callib = 1'b1;
 
     repeat (4)
         wait_cycle();
 
-    sensor_raw = 1'b1;
+    sensor_raw = 1'b0;
 
     wait_until_callib_done();
     wait_cycle();

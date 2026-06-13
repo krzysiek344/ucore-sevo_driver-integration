@@ -143,14 +143,14 @@ endtask
 task test_sensor_status();
     logic [31:0] rdata;
 
-    sensor_raw = 1'b1;
+    sensor_raw = 1'b0;
 
     @(negedge clk);
     dbus_read(SR_OFFSET, rdata);
     assert (rdata[3] == 1'b1) else
         $error("SR[3]: exp: 0x%x, rcv: 0x%x", 1'b1, rdata[3]);
 
-    sensor_raw = 1'b0;
+    sensor_raw = 1'b1;
 
     @(negedge clk);
     dbus_read(SR_OFFSET, rdata);
@@ -163,7 +163,7 @@ task test_callib_busy();
 
     u_rst_n_gen.reset();
 
-    sensor_raw = 1'b0;
+    sensor_raw = 1'b1;
 
     dbus_write(CR_OFFSET, 32'h0000_0003); // enable + callib
 
@@ -191,7 +191,7 @@ task test_callib_done();
 
     u_rst_n_gen.reset();
 
-    sensor_raw = 1'b0;
+    sensor_raw = 1'b1;
 
     dbus_write(CR_OFFSET, 32'h0000_0003); // enable + callib
 
@@ -199,7 +199,7 @@ task test_callib_done();
     assert (rdata[2] == 1'b1) else
         $error("SR[2]: exp: 0x%x, rcv: 0x%x", 1'b1, rdata[2]);
 
-    sensor_raw = 1'b1;
+    sensor_raw = 1'b0;
 
     for (int i = 0; i < 1_000_020; ++i)
         @(negedge clk);
@@ -215,7 +215,7 @@ task test_callib_done();
     assert (rdata[2] == 1'b0) else
         $error("SR[2]: exp: 0x%x, rcv: 0x%x", 1'b0, rdata[2]);
 
-    sensor_raw = 1'b0;
+    sensor_raw = 1'b1;
 endtask
 
 task test_go_to_busy();
@@ -271,7 +271,7 @@ endtask
 /* Test */
 
 initial begin
-    sensor_raw = 1'b0;   
+    sensor_raw = 1'b1;
 
     u_rst_n_gen.reset();
 
