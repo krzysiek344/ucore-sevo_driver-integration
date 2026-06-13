@@ -152,7 +152,7 @@ task test_read_only_registers();
     sensor_raw = 1'b1;
 
     dbus_write(SR_OFFSET, 32'hffff_ffff);
-    check_read(SR_OFFSET, 32'b0);
+    check_read(SR_OFFSET, 32'h0000_0008);
 
     dbus_write(CURRENT_POS_OFFSET, 32'h1234_5678);
     check_read(CURRENT_POS_OFFSET, 32'b0);
@@ -280,8 +280,8 @@ task test_go_to_done();
     wait_until_current_pos(32'd3);
 
     dbus_read(SR_OFFSET, rdata);
-    assert (rdata == 32'h0000_0002) else
-        $error("SR: exp: 0x%x, rcv: 0x%x", 32'h0000_0002, rdata);
+    assert (rdata == 32'h0000_000a) else
+        $error("SR: exp: 0x%x, rcv: 0x%x", 32'h0000_000a, rdata);
 
     dbus_read(CR_OFFSET, rdata);
     assert (rdata == 32'h0000_0001) else
@@ -291,7 +291,7 @@ task test_go_to_done();
     check_read(CURRENT_POS_OFFSET, 32'd3);
 
     dbus_write(SR_OFFSET, 32'b0);
-    check_read(SR_OFFSET, 32'h0000_0002);
+    check_read(SR_OFFSET, 32'h0000_000a);
 endtask
 
 task test_go_to_busy_without_enable();
