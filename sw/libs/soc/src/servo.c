@@ -23,8 +23,8 @@
 #define SERVO_SR_GO_TO_DONE_bm    (0x1 << SERVO_SR_GO_TO_DONE_bp)
 #define SERVO_SR_BUSY_bp          2
 #define SERVO_SR_BUSY_bm          (0x1 << SERVO_SR_BUSY_bp)
-#define SERVO_SR_SENSOR_ACTIVE_bp 3
-#define SERVO_SR_SENSOR_ACTIVE_bm (0x1 << SERVO_SR_SENSOR_ACTIVE_bp)
+#define SERVO_SR_SENSOR_RAW_bp    3
+#define SERVO_SR_SENSOR_RAW_bm    (0x1 << SERVO_SR_SENSOR_RAW_bp)
 
 
 void servo_set_enable(uint8_t en){
@@ -68,5 +68,5 @@ uint8_t servo_is_busy(void){
 }
 
 uint8_t servo_is_sensor_active(void){
-    return (servo_get_status() & SERVO_SR_SENSOR_ACTIVE_bm) ? 1 : 0;
+    return (servo_get_status() & SERVO_SR_SENSOR_RAW_bm) ? 0 : 1;
 }

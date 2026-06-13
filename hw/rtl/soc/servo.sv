@@ -28,12 +28,6 @@ logic [31:0] current_pos;
 logic [31:0] dbus_rdata_nxt;
 
 logic        callib_done;
-logic        sensor_active;
-
-
-/* Signals assignments */
-
-assign sensor_active = ~sensor_raw;
 
 
 /* Submodules placement */
@@ -109,7 +103,7 @@ always_comb begin
     end
 
     sr_nxt[2] = cr_nxt[1] | cr_nxt[2];
-    sr_nxt[3] = sensor_active;
+    sr_nxt[3] = sensor_raw;
 end
 
 always_ff @(posedge clk or negedge rst_n) begin
