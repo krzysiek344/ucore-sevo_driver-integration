@@ -70,6 +70,30 @@ task dbus_read(input logic [11:0] offset, output logic [31:0] rdata);
     rdata = servo_dbus.rdata;
 endtask
 
+task check_read(input logic [11:0] offset, input logic [31:0] exp_data);
+    logic [31:0] rdata;
+
+    dbus_read(offset, rdata);
+    assert (rdata == exp_data) else
+        $error("offset: 0x%x; exp: 0x%x, rcv: 0x%x", offset, exp_data, rdata);
+endtask
+
+task wait_until_current_pos(input logic [31:0] exp_pos);
+    int timeout;
+    logic [31:0] rdata;
+
+    timeout = 0;
+    dbus_read(CURRENT_POS_OFFSET, rdata);
+
+    while (rdata != exp_pos && timeout < 100) begin
+        dbus_read(CURRENT_POS_OFFSET, rdata);
+        timeout++;
+    end
+
+    assert (rdata == exp_pos) else
+        $error("CURRENT_POS timeout: exp: 0x%x, rcv: 0x%x", exp_pos, rdata);
+endtask
+
 task test_reset_values();
     logic [31:0] rdata;
 
@@ -111,7 +135,7 @@ task test_register_write_read();
         dbus_write(TARGET_POS_OFFSET, wdata);
         dbus_read(TARGET_POS_OFFSET, rdata);
         assert (rdata == wdata) else
-            $error("SCALE: exp: 0x%x, rcv: 0x%x", wdata, rdata);
+            $error("TARGET_POS: exp: 0x%x, rcv: 0x%x", wdata, rdata);
 
         wdata = {$random()} & 32'h0000_0009;          // nie chemy odpalac goto oraz callib gdy enable moze =1
 
@@ -120,6 +144,18 @@ task test_register_write_read();
         assert (rdata == wdata) else
             $error("CR: exp: 0x%x, rcv: 0x%x", wdata, rdata);
     end
+endtask
+
+task test_read_only_registers();
+    u_rst_n_gen.reset();
+
+    sensor_raw = 1'b1;
+
+    dbus_write(SR_OFFSET, 32'hffff_ffff);
+    check_read(SR_OFFSET, 32'h0000_0008);
+
+    dbus_write(CURRENT_POS_OFFSET, 32'h1234_5678);
+    check_read(CURRENT_POS_OFFSET, 32'b0);
 endtask
 
 task test_reset_after_random_writes();
@@ -143,19 +179,19 @@ endtask
 task test_sensor_status();
     logic [31:0] rdata;
 
-    sensor_raw = 1'b1;
-
-    @(negedge clk);
-    dbus_read(SR_OFFSET, rdata);
-    assert (rdata[3] == 1'b1) else
-        $error("SR[3]: exp: 0x%x, rcv: 0x%x", 1'b1, rdata[3]);
-
     sensor_raw = 1'b0;
 
     @(negedge clk);
     dbus_read(SR_OFFSET, rdata);
     assert (rdata[3] == 1'b0) else
         $error("SR[3]: exp: 0x%x, rcv: 0x%x", 1'b0, rdata[3]);
+
+    sensor_raw = 1'b1;
+
+    @(negedge clk);
+    dbus_read(SR_OFFSET, rdata);
+    assert (rdata[3] == 1'b1) else
+        $error("SR[3]: exp: 0x%x, rcv: 0x%x", 1'b1, rdata[3]);
 endtask
 
 task test_callib_busy();
@@ -163,7 +199,7 @@ task test_callib_busy();
 
     u_rst_n_gen.reset();
 
-    sensor_raw = 1'b0;
+    sensor_raw = 1'b1;
 
     dbus_write(CR_OFFSET, 32'h0000_0003); // enable + callib
 
@@ -191,7 +227,7 @@ task test_callib_done();
 
     u_rst_n_gen.reset();
 
-    sensor_raw = 1'b0;
+    sensor_raw = 1'b1;
 
     dbus_write(CR_OFFSET, 32'h0000_0003); // enable + callib
 
@@ -199,7 +235,7 @@ task test_callib_done();
     assert (rdata[2] == 1'b1) else
         $error("SR[2]: exp: 0x%x, rcv: 0x%x", 1'b1, rdata[2]);
 
-    sensor_raw = 1'b1;
+    sensor_raw = 1'b0;
 
     for (int i = 0; i < 1_000_020; ++i)
         @(negedge clk);
@@ -215,7 +251,7 @@ task test_callib_done();
     assert (rdata[2] == 1'b0) else
         $error("SR[2]: exp: 0x%x, rcv: 0x%x", 1'b0, rdata[2]);
 
-    sensor_raw = 1'b0;
+    sensor_raw = 1'b1;
 endtask
 
 task test_go_to_busy();
@@ -237,20 +273,25 @@ task test_go_to_done();
 
     u_rst_n_gen.reset();
 
-    dbus_write(SCALE_OFFSET, 32'd1);
+    dbus_write(SCALE_OFFSET, 32'd2);
     dbus_write(TARGET_POS_OFFSET, 32'd3);
     dbus_write(CR_OFFSET, 32'h0000_0005); // enable + go_to
 
-    for (int i = 0; i < 30; ++i)
-        @(negedge clk);
+    wait_until_current_pos(32'd3);
 
     dbus_read(SR_OFFSET, rdata);
-    assert (rdata == 32'h0000_0002) else
-        $error("SR: exp: 0x%x, rcv: 0x%x", 32'h0000_0009, rdata);
+    assert (rdata == 32'h0000_000a) else
+        $error("SR: exp: 0x%x, rcv: 0x%x", 32'h0000_000a, rdata);
 
     dbus_read(CR_OFFSET, rdata);
     assert (rdata == 32'h0000_0001) else
         $error("CR: exp: 0x%x, rcv: 0x%x", 32'h0000_0001, rdata);
+
+    dbus_write(CURRENT_POS_OFFSET, 32'h1234_5678);
+    check_read(CURRENT_POS_OFFSET, 32'd3);
+
+    dbus_write(SR_OFFSET, 32'b0);
+    check_read(SR_OFFSET, 32'h0000_000a);
 endtask
 
 task test_go_to_busy_without_enable();
@@ -271,12 +312,13 @@ endtask
 /* Test */
 
 initial begin
-    sensor_raw = 1'b0;   
+    sensor_raw = 1'b1;
 
     u_rst_n_gen.reset();
 
     test_reset_after_random_writes();
     test_register_write_read();
+    test_read_only_registers();
     test_sensor_status();
     test_callib_busy();
     test_callib_done();

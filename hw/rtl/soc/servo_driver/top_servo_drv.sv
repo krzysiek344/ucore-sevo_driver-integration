@@ -22,11 +22,14 @@ module top_servo_drv #(
     input  logic sensor_raw
 );
 
+    logic sensor_active_w;
     logic sensor_clean_w;
     logic set_zero_w;
     logic dir_w;
     logic prescaler_enable_w;
     logic step_tick_w;
+
+    assign sensor_active_w = ~sensor_raw;
 
     master_fsm #(
         .POS_RANGE(POS_RANGE)
@@ -61,7 +64,7 @@ module top_servo_drv #(
         .clk            (clk),
         .rst_n          (rst_n),
         .cleared_signal (sensor_clean_w),
-        .signal_in      (sensor_raw)
+        .signal_in      (sensor_active_w)
     );
 
     sequencer #(

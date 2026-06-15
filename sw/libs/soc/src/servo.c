@@ -68,5 +68,5 @@ uint8_t servo_is_busy(void){
 }
 
 uint8_t servo_is_sensor_active(void){
-    return (servo_get_status() & SERVO_SR_SENSOR_RAW_bm) ? 1 : 0;
+    return (servo_get_status() & SERVO_SR_SENSOR_RAW_bm) ? 0 : 1;
 }

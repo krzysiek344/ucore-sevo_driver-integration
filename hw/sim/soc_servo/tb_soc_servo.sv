@@ -13,7 +13,7 @@ logic       servo_sensor_raw;
 const int GO_TO_TIMEOUT_CYCLES = 5000;
 
 const logic [31:0] EXP_SERVO_CR_GO_TO_DONE = 32'h0000_0001;
-const logic [31:0] EXP_SERVO_SR_GO_TO_DONE = 32'h0000_0002;
+const logic [31:0] EXP_SERVO_SR_GO_TO_DONE = 32'h0000_000a;
 
 
 /* Submodules placement */
@@ -85,7 +85,7 @@ endtask
 initial begin
     initialize_code_rom();
 
-    servo_sensor_raw = 1'b0;
+    servo_sensor_raw = 1'b1;
 
     u_rst_n_gen.reset();
 
