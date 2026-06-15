@@ -5,6 +5,7 @@ Repozytorium zawiera integracje sprzetowego sterownika silnika krokowego z mikro
 ## Spis tresci
 1. [Opis repozytorium](#1-opis-repozytorium)
    - [Pochodzenie projektu](#pochodzenie-projektu)
+   - [Autorzy integracji](#autorzy-integracji)
 2. [Relacja do repozytorium z modulem servo](#2-relacja-do-repozytorium-z-modulem-servo)
 3. [Struktura projektu](#3-struktura-projektu)
 4. [Architektura integracji](#4-architektura-integracji)
@@ -22,13 +23,18 @@ Repozytorium zawiera integracje sprzetowego sterownika silnika krokowego z mikro
 
 ## 1. Opis repozytorium
 
-Projekt rozszerza bazowy SoC `ucore` o sprzetowy sterownik silnika krokowego. Sterownik z założenia ma być możliwie samodzielny w celu możliwie dużego odciążenia 'ucore'. Dzięki implementacji sterownika, jesteśmy w stanie sterować silnikiem krokowym równolegle do zadań, które już byliśmy w stanie na tym układzie wykonywać, bez wykorzystania przerwań, które nie są zaimplementowane w tym układzie.
+Projekt rozszerza bazowy SoC `ucore` o sprzetowy sterownik silnika krokowego. Sterownik z zalozenia ma dzialac mozliwie samodzielnie, aby odciazyc rdzen `ucore`. Dzieki temu silnik krokowy moze byc sterowany rownolegle do innych zadan wykonywanych przez uklad, bez wykorzystania przerwan, ktore nie sa w nim zaimplementowane.
 
 ### Pochodzenie projektu
 
-Repozytorium jest forkiem bazowego projektu [`asicsagh/ucore`](https://github.com/asicsagh/ucore), rozwijanego jako mikroprocesorowy SoC RISC-V. Oryginalny projekt zostal przygotowany przez dr. Pawla Skrzypca i stanowi punkt wyjscia dla tej integracji.
+Repozytorium jest forkiem bazowego projektu [`asicsagh/ucore`](https://github.com/asicsagh/ucore), rozwijanego jako mikroprocesorowy SoC RISC-V. Oryginalny projekt zostal przygotowany przez [dr. Pawla Skrzypca](https://github.com/pawelskrzypiec) i stanowi punkt wyjscia dla tej integracji.
 
 Zmiany w tym forku dotycza przede wszystkim dodania sprzetowego sterownika servo/steppera, wrappera memory-mapped, sterownika software, testow oraz integracji z FPGA Basys3.
+
+### Autorzy integracji
+
+- [KrzysztofM](https://github.com/krzysiek344)
+- [Olliweir](https://github.com/Olliweir)
 
 Glowny przeplyw sterowania:
 
