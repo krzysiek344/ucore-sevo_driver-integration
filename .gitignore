@@ -20,5 +20,7 @@ results/*
 !results/
 !results/.gitkeep
 !results/*.bit
-!results/warning_summary.log 
-!results/*.rptxvlog.pb
+!results/warning_summary.log
+!results/*.rpt
+
+xvlog.pb
