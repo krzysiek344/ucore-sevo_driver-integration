@@ -21,4 +21,4 @@ results/*
 !results/.gitkeep
 !results/*.bit
 !results/warning_summary.log 
-!results/*.rpt
+!results/*.rptxvlog.pb
