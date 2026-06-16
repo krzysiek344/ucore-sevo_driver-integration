@@ -1,3 +1,12 @@
+/*
+ * Authors:
+ *   Oliwier Krupa
+ *   Krzysztof Muś
+ *
+ * Description:
+ *   Coil phase sequencer module for the servo driver.
+ */
+
 `timescale 1ns / 1ps
 
 module sequencer #(

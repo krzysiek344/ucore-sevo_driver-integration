@@ -1,3 +1,12 @@
+/*
+ * Authors:
+ *   Oliwier Krupa
+ *   Krzysztof Muś
+ *
+ * Description:
+ *   Top-level module of the servo driver.
+ */
+
 `timescale 1ns / 1ps
 
 module top_servo_drv #(

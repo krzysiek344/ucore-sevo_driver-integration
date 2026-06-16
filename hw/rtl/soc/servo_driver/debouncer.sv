@@ -1,3 +1,12 @@
+/*
+ * Authors:
+ *   Oliwier Krupa
+ *   Krzysztof Muś
+ *
+ * Description:
+ *   Input debouncer module for the servo driver.
+ */
+
 `timescale 1ns / 1ps
 
 module debouncer #(
