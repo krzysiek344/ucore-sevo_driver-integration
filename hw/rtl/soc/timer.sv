@@ -6,8 +6,14 @@ module timer (
 
     dbus.slave  dbus
 );
+assign dbus.stall = 1'b0;
 
-
+always_ff @(posedge clk or negedge rst_n) begin
+    if (!rst_n) 
+        dbus.rvalid <= 1'b0;
+    else
+        dbus.rvalid <= dbus.rreq;
+end
 /* Constants */
 
 const logic [11:0] CR_OFFSET = 12'h000,

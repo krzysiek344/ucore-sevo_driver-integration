@@ -9,7 +9,14 @@ module uart (
     output logic sout,
     input logic  sin
 );
+assign dbus.stall = 1'b0;
 
+always_ff @(posedge clk or negedge rst_n) begin
+    if (!rst_n) 
+        dbus.rvalid <= 1'b0;
+    else
+        dbus.rvalid <= dbus.rreq;
+end
 
 /* Constants */
 

@@ -1,3 +1,12 @@
+/*
+ * Authors:
+ *   Oliwier Krupa
+ *   Krzysztof Muś
+ *
+ * Description:
+ *   Main finite state machine for the servo driver.
+ */
+
 module master_fsm #(
     // szerokosc magistrali dla rejestrow pozycji
     parameter POS_RANGE = 16
