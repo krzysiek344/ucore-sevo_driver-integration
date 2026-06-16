@@ -15,3 +15,10 @@ sw/**/build
 .dvt
 .vscode
 *.log
+
+results/*
+!results/
+!results/.gitkeep
+!results/*.bit
+!results/warning_summary.log 
+!results/*.rpt
