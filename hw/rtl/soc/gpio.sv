@@ -3,13 +3,20 @@
 module gpio (
     input logic         clk,
     input logic         rst_n,
-
     dbus.slave          dbus,
 
     output logic [31:0] dout,
     input logic [31:0]  din
 );
 
+assign dbus.stall = 1'b0;
+
+always_ff @(posedge clk or negedge rst_n) begin
+    if (!rst_n) 
+        dbus.rvalid <= 1'b0;
+    else
+        dbus.rvalid <= dbus.rreq;
+end
 
 /* Constants */
 

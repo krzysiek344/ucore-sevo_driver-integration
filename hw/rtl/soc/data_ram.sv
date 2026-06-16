@@ -11,7 +11,7 @@
 /* Local variables and signals */
 
 (* ram_style = "block" *) logic [31:0] mem [4096];
-
+(* keep = "true" *) logic unused_dbus_signals;
 
 /* Signals assignments */
 
